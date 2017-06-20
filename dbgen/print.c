@@ -153,8 +153,8 @@ dbg_print(int format, FILE *target, void *data, int len, int sep)
 #ifdef EOL_HANDLING
 	if (sep)
 #endif /* EOL_HANDLING */
-	fprintf(target, "%c", SEPARATOR);
-	
+	  fprintf(target, "%c", separator);
+
 	return(0);
 }
 
@@ -163,8 +163,14 @@ pr_cust(customer_t *c, int mode)
 {
 static FILE *fp = NULL;
         
-   if (fp == NULL)
+   if (fp == NULL) {
         fp = print_prep(CUST, 0);
+        if (zstdout && headerline) {
+          PR_STRT(fp);
+          PR_VSTR_LAST(fp, headerline, strlen(headerline));
+          PR_END(fp);          
+        }
+   }
 
    PR_STRT(fp);
    PR_HUGE(fp, &c->custkey);
@@ -198,6 +204,11 @@ pr_order(order_t *o, int mode)
             fclose(fp_o);
         fp_o = print_prep(ORDER, mode);
         last_mode = mode;
+        if (zstdout && headerline) {
+          PR_STRT(fp_o);
+          PR_VSTR_LAST(fp_o, headerline, strlen(headerline));
+          PR_END(fp_o);          
+        }
         }
     PR_STRT(fp_o);
     PR_HUGE(fp_o, &o->okey);
@@ -230,6 +241,11 @@ pr_line(order_t *o, int mode)
             fclose(fp_l);
         fp_l = print_prep(LINE, mode);
         last_mode = mode;
+        if (zstdout && headerline) {
+          PR_STRT(fp_l);
+          PR_VSTR_LAST(fp_l, headerline, strlen(headerline));
+          PR_END(fp_l);          
+        }
         }
 
     for (i = 0; i < o->lines; i++)
@@ -278,8 +294,14 @@ pr_part(part_t *part, int mode)
 {
 static FILE *p_fp = NULL;
 
-    if (p_fp == NULL)
+    if (p_fp == NULL) {
         p_fp = print_prep(PART, 0);
+        if (zstdout && headerline) {
+          PR_STRT(p_fp);
+          PR_VSTR_LAST(p_fp, headerline, strlen(headerline));
+          PR_END(p_fp);          
+        }
+   }
 
    PR_STRT(p_fp);
    PR_HUGE(p_fp, &part->partkey);
@@ -305,8 +327,14 @@ pr_psupp(part_t *part, int mode)
     static FILE *ps_fp = NULL;
     long      i;
 
-    if (ps_fp == NULL)
+    if (ps_fp == NULL) {
         ps_fp = print_prep(PSUPP, mode);
+        if (zstdout && headerline) {
+          PR_STRT(ps_fp);
+          PR_VSTR_LAST(ps_fp, headerline, strlen(headerline));
+          PR_END(ps_fp);          
+        }
+   }
 
    for (i = 0; i < SUPP_PER_PART; i++)
       {
@@ -340,8 +368,14 @@ pr_supp(supplier_t *supp, int mode)
 {
 static FILE *fp = NULL;
         
-   if (fp == NULL)
+   if (fp == NULL) {
         fp = print_prep(SUPP, mode);
+        if (zstdout && headerline) {
+          PR_STRT(fp);
+          PR_VSTR_LAST(fp, headerline, strlen(headerline));
+          PR_END(fp);          
+        }
+   }
 
    PR_STRT(fp);
    PR_HUGE(fp, &supp->suppkey);
@@ -361,8 +395,14 @@ pr_nation(code_t *c, int mode)
 {
 static FILE *fp = NULL;
         
-   if (fp == NULL)
+   if (fp == NULL) {
         fp = print_prep(NATION, mode);
+        if (zstdout && headerline) {
+          PR_STRT(fp);
+          PR_VSTR_LAST(fp, headerline, strlen(headerline));
+          PR_END(fp);          
+        }
+   }
 
    PR_STRT(fp);
    PR_HUGE(fp, &c->code);
@@ -379,8 +419,14 @@ pr_region(code_t *c, int mode)
 {
 static FILE *fp = NULL;
         
-   if (fp == NULL)
+   if (fp == NULL) {
         fp = print_prep(REGION, mode);
+        if (zstdout && headerline) {
+          PR_STRT(fp);
+          PR_VSTR_LAST(fp, headerline, strlen(headerline));
+          PR_END(fp);          
+        }
+   }
 
    PR_STRT(fp);
    PR_HUGE(fp, &c->code);

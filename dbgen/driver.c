@@ -408,6 +408,8 @@ usage (void)
 	fprintf (stderr, "-T r   -- generate region ONLY\n");
 	fprintf (stderr, "-T s   -- generate suppliers ONLY\n");
 	fprintf (stderr, "-T S   -- generate partsupp ONLY\n");
+	fprintf (stderr, "-w <c> -- alternate field separator from default \\t\n");
+	fprintf (stderr, "-Z <s> -- header line before data begins\n");
 	fprintf (stderr,
 		"\nTo generate the SF=1 (1GB), validation database population, use:\n");
 	fprintf (stderr, "\tdbgen -vf -s 1\n");
@@ -452,7 +454,7 @@ process_options (int count, char **vector)
 	FILE *pF;
 	
 	while ((option = getopt (count, vector,
-		"b:C:d:fi:hO:P:qs:S:T:U:vz")) != -1)
+		"b:C:d:fi:hO:P:qs:S:T:U:vw:zZ:")) != -1)
 	switch (option)
 	{
 		case 'b':				/* load distributions from named file */
@@ -522,8 +524,19 @@ process_options (int count, char **vector)
 		case 'v':				/* life noises enabled */
 			verbose = 1;
 			break;
+		case 'w':
+			if ((sscanf (optarg,"%c",&separator) !=1)) {
+				fprintf(stderr, "ERROR: Invalid argument to -w");
+				exit(-1);
+			}
+			break;
 		case 'z':				/* output to stdout */
 			zstdout = 1;
+			break;
+		case 'Z':				/* header row for stdout */
+			headerline = (char *)malloc((int)strlen(optarg) + 1);
+			MALLOC_CHECK(headerline);
+			strcpy(headerline, optarg);
 			break;
 		case 'T':				/* generate a specifc table */
 			switch (*optarg)
@@ -693,6 +706,8 @@ main (int ac, char **av)
 		ORDERS_PER_CUST;			/* have to do this after init */
 	children = 1;
 	d_path = NULL;
+  headerline = NULL;
+  separator = SEPARATOR;
 	
 #ifdef NO_SUPPORT
 	signal (SIGINT, exit);
